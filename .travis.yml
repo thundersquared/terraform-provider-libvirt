@@ -1,0 +1,29 @@
+os: osx
+sudo: false
+
+language: go
+go:
+  - 1.13.x
+
+git:
+  depth: 1
+  go_import_path: github.com/dmacvicar/terraform-provider-libvirt
+install: true
+
+before_script:
+  - brew install terraform libvirt || echo "Couldn't probably link..."
+  - terraform version
+
+script:
+  - go get -v -u github.com/hashicorp/terraform/plugin
+  - go get -v -u github.com/dmacvicar/terraform-provider-libvirt
+  - go build -a -v github.com/dmacvicar/terraform-provider-libvirt
+
+deploy:
+  provider: releases
+  api_key: "$GITHUB_PERSONAL_ACCESS_TOKEN"
+  file: "$GOPATH/bin/terraform-provider-libvirt"
+  skip_cleanup: true
+  on:
+    repo: thundersquared/terraform-provider-libvirt
+    tags: true
